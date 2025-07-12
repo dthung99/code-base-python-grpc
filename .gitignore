@@ -196,3 +196,10 @@ cython_debug/
 # IDE and OS settings
 .DS_Store
 .vscode
+
+# local file
+*.local.*
+
+# Generated grpc code
+*pb2.py
+*pb2_grpc.py

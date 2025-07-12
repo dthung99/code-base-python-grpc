@@ -7,15 +7,22 @@ requires-python = ">=3.11"
 dependencies = [
     "anthropic>=0.54.0",
     "google-genai>=1.19.0",
+    "grpcio>=1.73.1",
+    "grpcio-reflection>=1.73.1",
+    "grpcio-status>=1.73.1",
+    "grpcio-tools>=1.73.1",
     "langchain-core>=0.3.65",
     "openai>=1.84.0",
+    "protobuf>=6.31.1",
     "pydantic>=2.11.5",
     "python-dotenv>=1.1.0",
 ]
 
 [dependency-groups]
 dev = [
+    "mypy>=1.16.1",
     "pip>=25.1.1",
     "pytest>=8.4.0",
+    "pytest-asyncio>=1.0.0",
     "pytest-mock>=3.14.1",
 ]

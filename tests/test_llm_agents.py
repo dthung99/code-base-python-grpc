@@ -1,15 +1,16 @@
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 from pydantic import BaseModel
 
-from src.ai_python_services.ai_agents import (
-    OpenAIAgent,
+from ai_python_services.packages.ai_agents import (
     AnthropicAgent,
-    GoogleAgent,
-    OpenAIModel,
     AnthropicModel,
+    GoogleAgent,
     GoogleModel,
     Language,
+    OpenAIAgent,
+    OpenAIModel,
 )
 
 
@@ -55,7 +56,7 @@ class TestLLMAgents:
         with pytest.raises(ValueError, match="API key must be set"):
             OpenAIAgent()
 
-    @patch("src.ai_python_services.ai_agents.llm_agents.OpenAI")
+    @patch("ai_python_services.packages.ai_agents.llm_agents.OpenAI")
     def test_openai_agent_text_generation(self, mock_openai_class, mock_env_vars):
         """Test OpenAI agent text generation."""
         # Mock the OpenAI client and response
@@ -73,7 +74,7 @@ class TestLLMAgents:
         assert response == self.expected_text_response
         mock_client.chat.completions.create.assert_called_once()
 
-    @patch("src.ai_python_services.ai_agents.llm_agents.OpenAI")
+    @patch("ai_python_services.packages.ai_agents.llm_agents.OpenAI")
     def test_openai_agent_json_generation(self, mock_openai_class, mock_env_vars):
         """Test OpenAI agent JSON generation."""
         # Mock the OpenAI client and response
@@ -111,7 +112,7 @@ class TestLLMAgents:
         with pytest.raises(ValueError, match="API key must be set"):
             AnthropicAgent()
 
-    @patch("src.ai_python_services.ai_agents.llm_agents.Anthropic")
+    @patch("ai_python_services.packages.ai_agents.llm_agents.Anthropic")
     def test_anthropic_agent_text_generation(self, mock_anthropic_class, mock_env_vars):
         """Test Anthropic agent text generation."""
         # Mock the Anthropic client and response
@@ -144,7 +145,7 @@ class TestLLMAgents:
         with pytest.raises(ValueError, match="API key must be set"):
             GoogleAgent()
 
-    @patch("src.ai_python_services.ai_agents.llm_agents.genai.Client")
+    @patch("ai_python_services.packages.ai_agents.llm_agents.genai.Client")
     def test_google_agent_text_generation(self, mock_genai_class, mock_env_vars):
         """Test Google agent text generation."""
         # Mock the Google client and response
@@ -161,7 +162,7 @@ class TestLLMAgents:
         assert response == self.expected_text_response
         mock_client.models.generate_content.assert_called_once()
 
-    @patch("src.ai_python_services.ai_agents.llm_agents.genai.Client")
+    @patch("ai_python_services.packages.ai_agents.llm_agents.genai.Client")
     def test_google_agent_json_generation(self, mock_genai_class, mock_env_vars):
         """Test Google agent JSON generation."""
         # Mock the Google client and response

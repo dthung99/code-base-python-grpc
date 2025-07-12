@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package ai_service;
+
+// The AI service definition
+service AiService {
+ // Simple hello world method
+ rpc SayHello(HelloRequest) returns (HelloResponse);
+ rpc SayHelloNext(HelloRequest) returns (HelloResponse);
+}
+
+// Request message for SayHello
+message HelloRequest {
+ string name = 1;
+}
+
+// Response message for SayHello
+message HelloResponse {
+ string message = 1;
+}

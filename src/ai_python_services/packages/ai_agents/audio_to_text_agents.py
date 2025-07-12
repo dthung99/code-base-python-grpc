@@ -3,14 +3,14 @@ from io import BytesIO
 from mimetypes import guess_type
 from os import getenv
 
-from openai import OpenAI
 from google import genai
 from google.genai import types
+from openai import OpenAI
 
-from ai_python_services.ai_agents.ai_enum import (
+from .ai_enum import (
+    GoogleTranscriptModel,
     Language,
     OpenAITranscriptModel,
-    GoogleTranscriptModel,
 )
 
 
