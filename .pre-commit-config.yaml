@@ -1,0 +1,23 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check-uv
+        name: Ruff Check (via uv run)
+        entry: uv run ruff check .
+        language: system
+        types: [python]
+        pass_filenames: false
+        # If you want it to run on all files, change to `false` or adjust args.
+        # For a linter, running on staged files is common.
+
+  # New local hook for Pyright using uv run
+  - repo: local
+    hooks:
+      - id: pyright-uv
+        name: Pyright (via uv run)
+        entry: uv run pyright
+        language: system
+        types: [python]
+        pass_filenames: false # Pyright often works better when it scans the whole project
+        # always_run: true # Ensures it runs even if no Python files are staged (useful for project-wide checks)

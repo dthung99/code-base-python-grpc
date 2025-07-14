@@ -20,9 +20,44 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "mypy>=1.16.1",
     "pip>=25.1.1",
+    "pre-commit>=4.2.0",
+    "pyright>=1.1.403",
     "pytest>=8.4.0",
     "pytest-asyncio>=1.0.0",
     "pytest-mock>=3.14.1",
+    "ruff>=0.12.3",
+    "types-grpcio>=1.0.0.20250703",
+    "types-protobuf>=6.30.2.20250703",
+    "types-requests>=2.32.4.20250611",
 ]
+
+[tool.ruff]
+line-length = 100
+src = ["./"] # Check all files in the current directory and subdirectories
+exclude = [
+    ".venv",
+    "**/__pycache__",
+    "*.pyc",
+    "*.egg-info",
+    ".git",
+    "docs",
+    "build",
+    "dist",
+    "**/*_pb2.py",      # Exclude generated Protobuf files
+    "**/*_pb2_grpc.py", # Exclude generated gRPC service files
+]
+
+# Linting settings
+[tool.ruff.lint]
+select = [
+    "E",   # Pycodestyle errors (basic style violations, e.g., whitespace)
+    "F",   # Pyflakes (common programming errors, e.g., unused imports, undefined names)
+    "W",   # Pycodestyle warnings (less severe style violations)
+    "I",   # isort (import sorting and formatting)
+    "B",   # flake8-bugbear (common bug patterns and potential design problems)
+    "RUF", # Ruff-specific rules (various optimizations and checks)
+]
+
+# Ignore specific rules.
+ignore = ["RUF001", "RUF003"]

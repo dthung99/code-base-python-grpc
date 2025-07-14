@@ -1,10 +1,9 @@
 import asyncio
 
 import grpc
-from grpc_reflection.v1alpha import reflection
-
 from ai_python_services.proto import ai_service_pb2, ai_service_pb2_grpc
 from ai_python_services.services.ai_service import AiServiceServicer
+from grpc_reflection.v1alpha import reflection
 
 
 class App:
@@ -24,9 +23,7 @@ class App:
 
         # TODO: ADD SERVICES HERE
         # Add our service to the server
-        ai_service_pb2_grpc.add_AiServiceServicer_to_server(
-            AiServiceServicer(), self.aio_server
-        )
+        ai_service_pb2_grpc.add_AiServiceServicer_to_server(AiServiceServicer(), self.aio_server)
 
         # Enable server reflection
         SERVICE_NAMES = (

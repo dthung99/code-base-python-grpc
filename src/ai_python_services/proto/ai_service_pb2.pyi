@@ -3,10 +3,9 @@ from google.protobuf.message import Message
 
 DESCRIPTOR: FileDescriptor
 
-class HelloRequest(Message):
-    name: str
-    def __init__(self, *, name: str = ...) -> None: ...
+class HealthRequest(Message):
+    def __init__(self) -> None: ...
 
-class HelloResponse(Message):
+class HealthResponse(Message):
     message: str
     def __init__(self, *, message: str = ...) -> None: ...

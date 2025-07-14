@@ -1,0 +1,15 @@
+{
+  "include": ["src"], // Optional: explicitly include only 'src' if that's all you want to type-check
+  "exclude": [
+    "tests",
+    "scripts",
+    "**/node_modules", // Pyright often excludes this by default, but explicit is fine
+    "**/__pycache__", // Pyright often excludes this by default
+    "**/.venv", // Pyright often excludes virtual environments by default, but explicit is fine
+    "**/*_pb2_grpc.py",
+    "**/*_pb2.py" // Exclude generated gRPC and protobuf files
+  ],
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false
+  // "pythonVersion": "3.11" // Set this to your project's Python version
+}

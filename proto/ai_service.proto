@@ -5,16 +5,14 @@ package ai_service;
 // The AI service definition
 service AiService {
  // Simple hello world method
- rpc SayHello(HelloRequest) returns (HelloResponse);
- rpc SayHelloNext(HelloRequest) returns (HelloResponse);
+ rpc Health(HealthRequest) returns (HealthResponse);
 }
 
-// Request message for SayHello
-message HelloRequest {
- string name = 1;
+// Request message for Health
+message HealthRequest {
 }
 
-// Response message for SayHello
-message HelloResponse {
+// Response message for Health
+message HealthResponse {
  string message = 1;
 }

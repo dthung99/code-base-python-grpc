@@ -4,7 +4,7 @@ from os import getenv
 from typing import Any
 
 from anthropic import Anthropic
-from google import genai
+from google.genai import Client
 from langchain_core.output_parsers import JsonOutputParser
 from openai import OpenAI
 from pydantic import BaseModel
@@ -40,7 +40,7 @@ class LLMAgent(ABC):
         pass
 
 
-class OpenAIAgent(LLMAgent):
+class OpenAILanguageAgent(LLMAgent):
     """OpenAI-specific LLM agent."""
 
     def __init__(
@@ -53,9 +53,7 @@ class OpenAIAgent(LLMAgent):
 
         api_key = getenv("OPENAI_API_KEY")
         if api_key is None:
-            raise ValueError(
-                "API key must be set in the environment variable 'OPENAI_API_KEY'"
-            )
+            raise ValueError("API key must be set in the environment variable 'OPENAI_API_KEY'")
         self.client = OpenAI(api_key=api_key)
 
     def generate(
@@ -66,7 +64,11 @@ class OpenAIAgent(LLMAgent):
     ) -> str | dict[str, Any]:
         """Generate a response using OpenAI's LLM."""
 
-        full_prompt = f"{prompt}\n\nUser: {input_text}\n\nPlease respond in {self.language.toText()}."
+        full_prompt = f"""
+        {prompt}User: {input_text}
+
+        Please respond in {self.language.toText()}.
+        """
 
         if output_format is None:
             response = self.client.chat.completions.create(
@@ -101,7 +103,7 @@ class OpenAIAgent(LLMAgent):
             )
 
 
-class AnthropicAgent(LLMAgent):
+class AnthropicLanguageAgent(LLMAgent):
     """Anthropic-specific LLM agent."""
 
     def __init__(
@@ -114,9 +116,7 @@ class AnthropicAgent(LLMAgent):
 
         api_key = getenv("ANTHROPIC_API_KEY")
         if not api_key:
-            raise ValueError(
-                "API key must be set in the environment variable 'ANTHROPIC_API_KEY'"
-            )
+            raise ValueError("API key must be set in the environment variable 'ANTHROPIC_API_KEY'")
         self.client = Anthropic(api_key=api_key)
 
     def generate(
@@ -144,7 +144,11 @@ class AnthropicAgent(LLMAgent):
             response = self.client.messages.create(
                 model=self.model_name.value,
                 max_tokens=1024,
-                system=f"{prompt}\n{format_instructions}\n\nPlease respond in {self.language.toText()}.",
+                system=f"""
+                {prompt}\n{format_instructions}
+
+                Please respond in {self.language.toText()}.
+                """,
                 messages=[{"role": "user", "content": input_text}],
                 temperature=0,
             )
@@ -153,7 +157,7 @@ class AnthropicAgent(LLMAgent):
             return parser.parse(response_text)  # type: ignore
 
 
-class GoogleAgent(LLMAgent):
+class GoogleLanguageAgent(LLMAgent):
     """Google-specific LLM agent."""
 
     def __init__(
@@ -166,10 +170,8 @@ class GoogleAgent(LLMAgent):
 
         api_key = getenv("GOOGLE_API_KEY")
         if not api_key:
-            raise ValueError(
-                "API key must be set in the environment variable 'GOOGLE_API_KEY'"
-            )
-        self.client = genai.Client(api_key=api_key)
+            raise ValueError("API key must be set in the environment variable 'GOOGLE_API_KEY'")
+        self.client = Client(api_key=api_key)
 
     def generate(
         self,
@@ -179,7 +181,9 @@ class GoogleAgent(LLMAgent):
     ) -> str | dict[str, Any]:
         """Generate a response using Google's Gemini."""
 
-        full_content = f"{prompt}\n\nUser: {input_text}\n\nPlease respond in {self.language.toText()}."
+        full_content = f"""{prompt}\n\nUser: {input_text}
+
+        Please respond in {self.language.toText()}."""
 
         if output_format is None:
             response = self.client.models.generate_content(
@@ -214,7 +218,7 @@ if __name__ == "__main__":
 
     # Test OpenAI
     print("Testing OpenAI Agent...")
-    agent = OpenAIAgent(model_name=OpenAIModel.GPT_4O_MINI)
+    agent = OpenAILanguageAgent(model_name=OpenAIModel.GPT_4O_MINI)
     response = agent.generate(
         prompt="You are an AI assistant named Felix.",
         input_text="Hello, what's your name?",
@@ -235,7 +239,7 @@ if __name__ == "__main__":
 
     # Test Anthropic
     print("\nTesting Anthropic Agent...")
-    agent = AnthropicAgent(model_name=AnthropicModel.CLAUDE_3_5_HAIKU)
+    agent = AnthropicLanguageAgent(model_name=AnthropicModel.CLAUDE_3_5_HAIKU)
     response = agent.generate(
         prompt="You are an AI assistant named Felix.",
         input_text="Hello, what's your name?",
@@ -247,7 +251,7 @@ if __name__ == "__main__":
 
     # Test Google
     print("\nTesting Google Agent...")
-    agent = GoogleAgent(model_name=GoogleModel.GEMINI_2_0_FLASH)
+    agent = GoogleLanguageAgent(model_name=GoogleModel.GEMINI_2_0_FLASH)
     response = agent.generate(
         prompt="You are an AI assistant named Felix.",
         input_text="Hello, what's your name?",
@@ -258,7 +262,7 @@ if __name__ == "__main__":
     assert isinstance(response, dict), "Google JSON test failed"
 
     # Test string output
-    agent = GoogleAgent(model_name=GoogleModel.GEMINI_2_0_FLASH)
+    agent = GoogleLanguageAgent(model_name=GoogleModel.GEMINI_2_0_FLASH)
     response = agent.generate(
         prompt="You are an AI assistant named Felix.",
         input_text="Hello, what's your name?",

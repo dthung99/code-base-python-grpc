@@ -5,8 +5,7 @@ from os import getenv
 from typing import Any
 
 from anthropic import Anthropic
-from google import genai
-from google.genai import types
+from google.genai import Client, types
 from langchain_core.output_parsers import JsonOutputParser
 from openai import OpenAI
 from pydantic import BaseModel
@@ -58,9 +57,7 @@ class OpenAIVisionAgent(VLMAgent):
 
         api_key = getenv("OPENAI_API_KEY")
         if api_key is None:
-            raise ValueError(
-                "API key must be set in the environment variable 'OPENAI_API_KEY'"
-            )
+            raise ValueError("API key must be set in the environment variable 'OPENAI_API_KEY'")
         self.client = OpenAI(api_key=api_key)
 
     def analyze_images(
@@ -147,9 +144,7 @@ class AnthropicVisionAgent(VLMAgent):
 
         api_key = getenv("ANTHROPIC_API_KEY")
         if not api_key:
-            raise ValueError(
-                "API key must be set in the environment variable 'ANTHROPIC_API_KEY'"
-            )
+            raise ValueError("API key must be set in the environment variable 'ANTHROPIC_API_KEY'")
         self.client = Anthropic(api_key=api_key)
 
     def analyze_images(
@@ -180,6 +175,7 @@ class AnthropicVisionAgent(VLMAgent):
         else:
             assert len(images_mime_type) == len(images)
             images_mime_types = images_mime_type
+
         # Add each image
         for i, image_bytes in enumerate(images):
             base64_image = b64encode(image_bytes).decode("utf-8")
@@ -239,10 +235,8 @@ class GoogleVisionAgent(VLMAgent):
 
         api_key = getenv("GOOGLE_API_KEY")
         if not api_key:
-            raise ValueError(
-                "API key must be set in the environment variable 'GOOGLE_API_KEY'"
-            )
-        self.client = genai.Client(api_key=api_key)
+            raise ValueError("API key must be set in the environment variable 'GOOGLE_API_KEY'")
+        self.client = Client(api_key=api_key)
 
     def analyze_images(
         self,
@@ -262,16 +256,12 @@ class GoogleVisionAgent(VLMAgent):
 
         # Prepare content - start with prompt
         contents: list[Any] = [
-            self.prompt
-            + f"\n{input_text}"
-            + f"\nPlease respond in {self.language.toText()}",
+            self.prompt + f"\n{input_text}" + f"\nPlease respond in {self.language.toText()}",
         ]
 
         # Add each image using types.Part.from_bytes
         for i, image_bytes in enumerate(images):
-            image_part = types.Part.from_bytes(
-                data=image_bytes, mime_type=images_mime_types[i]
-            )
+            image_part = types.Part.from_bytes(data=image_bytes, mime_type=images_mime_types[i])
             contents.append(f"Image {i + 1}")
             contents.append(image_part)
 
@@ -314,8 +304,8 @@ if __name__ == "__main__":
         response: list[ImageAnalysis]
 
     # Test with a sample image URL
-    img1 = "tests/img1.png"
-    img2 = "tests/img2.png"
+    img1 = "tests/data/img1.png"
+    img2 = "tests/data/img2.png"
 
     # Test OpenAI Vision
     try:
@@ -351,9 +341,7 @@ if __name__ == "__main__":
     # Test Anthropic Vision
     try:
         print("\nTesting Anthropic Vision Agent...")
-        anthropic_agent = AnthropicVisionAgent(
-            model_name=AnthropicVisionModel.CLAUDE_3_5_HAIKU
-        )
+        anthropic_agent = AnthropicVisionAgent(model_name=AnthropicVisionModel.CLAUDE_3_5_HAIKU)
         response = anthropic_agent.analyze_images(
             images=[open(img1, "rb").read(), open(img2, "rb").read()],
             input_text="What do you see in these images?",
