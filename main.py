@@ -1,7 +1,7 @@
 import asyncio
 
 import grpc
-from ai_python_services.proto import ai_service_pb2, ai_service_pb2_grpc
+from ai_python_services.proto.ai_service import ai_service_pb2, ai_service_pb2_grpc
 from ai_python_services.services.ai_service import AiServiceServicer
 from grpc_reflection.v1alpha import reflection
 

@@ -27,7 +27,7 @@ def generate_grpc_code(
         sys.exit(1)
 
     # Find all .proto files
-    proto_files = list(proto_dir.glob("*.proto"))
+    proto_files = list(proto_dir.rglob("*.proto"))
 
     if not proto_files:
         print(f"❌ No .proto files found in: {proto_dir}")
@@ -122,7 +122,7 @@ def generate_proto_stubs(
         return
 
     # Find all .proto files
-    proto_files = list(proto_dir.glob("*.proto"))
+    proto_files = list(proto_dir.rglob("*.proto"))
 
     if not proto_files:
         print(f"❌ No .proto files found in: {proto_dir}")
@@ -283,7 +283,7 @@ def _convert_type(proto_type: str) -> str:
 
 def main():
     generate_grpc_code(Path("proto"), Path("src/ai_python_services/proto"))
-    fix_grpc_imports(Path("src/ai_python_services/proto"))
+    # fix_grpc_imports(Path("src/ai_python_services/proto"))
     generate_proto_stubs(Path("proto"), Path("src/ai_python_services/proto"))
     # generate_proto_init(Path("src/ai_python_services/proto"))
 
