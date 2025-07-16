@@ -84,18 +84,28 @@ def fix_grpc_imports(output_dir: Path = Path("src/ai_python_services/proto")) ->
     """Fix relative imports in generated gRPC files."""
     print("🔧 Fixing gRPC imports...")
 
-    for grpc_file in output_dir.glob("*_pb2_grpc.py"):
+    for grpc_file in output_dir.rglob("*.py"):
         print(f"   Fixing imports in: {grpc_file.name}")
+
+        # Create empty __init__.py if it doesn't exist
+        init_file = grpc_file.parent / "__init__.py"
+        if not init_file.exists():
+            init_file.touch()
+            print(f"   Created: {init_file.name}")
 
         # Read the file
         content = grpc_file.read_text(encoding="utf-8")
 
-        # Find the pb2 module name (e.g., "ai_service_pb2")
-        pb2_module = grpc_file.name.replace("_grpc.py", "")
+        # Get the relative path from output_dir and extract directory components
+        relative_path = grpc_file.relative_to(output_dir)
+        path_parts = relative_path.parent.parts
 
         # Replace absolute import with relative import
-        old_import = f"import {pb2_module} as"
-        new_import = f"from . import {pb2_module} as"
+        old_name = ".".join(path_parts)
+        new_name = f"{'.' * (len(path_parts) + 1)}{old_name}"
+
+        old_import = f"from {old_name} import "
+        new_import = f"from {new_name} import "
 
         if old_import in content:
             content = content.replace(old_import, new_import)
@@ -132,11 +142,24 @@ def generate_proto_stubs(
     for proto_file in proto_files:
         print(f"   Parsing proto file: {proto_file.name}")
 
+        # Calculate relative path to maintain directory structure
+        relative_path = proto_file.relative_to(proto_dir)
+        stub_output_dir = output_dir / relative_path.parent
+
+        # Create output directory if it doesn't exist
+        stub_output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create __init__.py if it doesn't exist
+        init_file = stub_output_dir / "__init__.py"
+        if not init_file.exists():
+            init_file.touch()
+
         # Read proto file content
         proto_content = proto_file.read_text(encoding="utf-8")
 
-        # Extract message classes
+        # Extract messages and services
         messages = []
+        services = []
         lines = proto_content.split("\n")
 
         for i, line in enumerate(lines):
@@ -157,24 +180,41 @@ def generate_proto_stubs(
                                 field_type = parts[0]
                                 field_name = parts[1]
                                 python_type = _convert_type(field_type)
-                                fields.append((field_name, python_type))
+                                if python_type != "":
+                                    # Append field name and type
+                                    fields.append((field_name, python_type))
                     j += 1
 
                 messages.append((message_name, fields))
 
-        # Generate stub file
-        stub_file_name = f"{proto_file.stem}_pb2.pyi"
-        stub_file = output_dir / stub_file_name
+            elif line.startswith("service "):
+                service_name = line.split()[1]
+                services.append(service_name)
 
-        stub_content = [
-            "from google.protobuf.descriptor import FileDescriptor",
-            "from google.protobuf.message import Message",
-            "",
-            "DESCRIPTOR: FileDescriptor",
-            "",
-        ]
+        # Build imports based on content
+        stub_content = []
 
-        # Generate class definitions
+        # Only import what we need
+        if services:
+            stub_content.append("from google.protobuf.descriptor import FileDescriptor")
+
+        if messages:
+            stub_content.append("from google.protobuf.message import Message")
+
+        # Add empty line after imports if any
+        if stub_content:
+            stub_content.append("")
+
+        # Add DESCRIPTOR only if there are services
+        if services:
+            stub_content.extend(
+                [
+                    "DESCRIPTOR: FileDescriptor",
+                    "",
+                ]
+            )
+
+        # Generate message class definitions
         for message_name, fields in messages:
             stub_content.extend(
                 [
@@ -203,9 +243,13 @@ def generate_proto_stubs(
                 ]
             )
 
+        # Generate stub file in the correct directory
+        stub_file_name = f"{proto_file.stem}_pb2.pyi"
+        stub_file = stub_output_dir / stub_file_name
+
         # Write stub file
         stub_file.write_text("\n".join(stub_content), encoding="utf-8")
-        print(f"   ✅ Generated stub: {stub_file.name}")
+        print(f"   ✅ Generated stub: {stub_file.relative_to(output_dir)}")
 
 
 def _convert_type(proto_type: str) -> str:
@@ -216,7 +260,7 @@ def _convert_type(proto_type: str) -> str:
         "bool": "bool",
         # Add more mappings as needed
     }
-    return type_mapping.get(proto_type, proto_type)  # Default case, return as is
+    return type_mapping.get(proto_type, "")  # Default case, return empty string
 
 
 # region: Old proto init generation
@@ -283,7 +327,7 @@ def _convert_type(proto_type: str) -> str:
 
 def main():
     generate_grpc_code(Path("proto"), Path("src/ai_python_services/proto"))
-    # fix_grpc_imports(Path("src/ai_python_services/proto"))
+    fix_grpc_imports(Path("src/ai_python_services/proto"))
     generate_proto_stubs(Path("proto"), Path("src/ai_python_services/proto"))
     # generate_proto_init(Path("src/ai_python_services/proto"))
 

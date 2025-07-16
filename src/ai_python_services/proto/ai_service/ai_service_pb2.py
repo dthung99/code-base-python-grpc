@@ -22,17 +22,17 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from . import requests_pb2 as ai__service_dot_requests__pb2
-from . import responses_pb2 as ai__service_dot_responses__pb2
+from ..ai_service import ai_service_requests_pb2 as ai__service_dot_ai__service__requests__pb2
+from ..ai_service import ai_service_responses_pb2 as ai__service_dot_ai__service__responses__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61i_service/ai_service.proto\x12\nai_service\x1a\x19\x61i_service/requests.proto\x1a\x1a\x61i_service/responses.proto2\xa4\x01\n\tAiService\x12?\n\x06Health\x12\x19.ai_service.HealthRequest\x1a\x1a.ai_service.HealthResponse\x12V\n\rGenerateNotes\x12!.ai_service.NoteGenerationRequest\x1a\".ai_service.NoteGenerationResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61i_service/ai_service.proto\x12\nai_service\x1a$ai_service/ai_service_requests.proto\x1a%ai_service/ai_service_responses.proto2\xa4\x01\n\tAiService\x12?\n\x06Health\x12\x19.ai_service.HealthRequest\x1a\x1a.ai_service.HealthResponse\x12V\n\rGenerateNotes\x12!.ai_service.NoteGenerationRequest\x1a\".ai_service.NoteGenerationResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'ai_service.ai_service_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_AISERVICE']._serialized_start=99
-  _globals['_AISERVICE']._serialized_end=263
+  _globals['_AISERVICE']._serialized_start=121
+  _globals['_AISERVICE']._serialized_end=285
 # @@protoc_insertion_point(module_scope)

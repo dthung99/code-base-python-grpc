@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package ai_service;
 
-import "ai_service/requests.proto";
-import "ai_service/responses.proto";
+import "ai_service/ai_service_requests.proto";
+import "ai_service/ai_service_responses.proto";
 
 // The AI service definition
 service AiService {

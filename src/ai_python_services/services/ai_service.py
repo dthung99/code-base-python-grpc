@@ -6,10 +6,9 @@ This module implements the AiService gRPC service defined in ai_service.proto.
 
 import grpc
 from ai_python_services.proto.ai_service import (
-    ai_service_pb2,
     ai_service_pb2_grpc,
-    requests_pb2,
-    responses_pb2,
+    ai_service_requests_pb2,
+    ai_service_responses_pb2,
 )
 
 
@@ -31,12 +30,12 @@ class AiServiceServicer(ai_service_pb2_grpc.AiServiceServicer):
 
     def Health(
         self,
-        request: requests_pb2.HealthRequest,
+        request: ai_service_requests_pb2.HealthRequest,
         context: grpc.ServicerContext,
-    ) -> responses_pb2.HealthResponse | None:
+    ) -> ai_service_responses_pb2.HealthResponse | None:
         if not self._authenticate(context):
             return None
         # Create response message
-        response = responses_pb2.HealthResponse(message="Healthy")
+        response = ai_service_responses_pb2.HealthResponse(message="Healthy")
 
         return response

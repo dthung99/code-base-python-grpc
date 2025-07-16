@@ -2,7 +2,12 @@ from unittest.mock import Mock
 
 import grpc
 import pytest
-from ai_python_services.proto import ai_service_pb2, ai_service_pb2_grpc
+from ai_python_services.proto.ai_service import (
+    ai_service_pb2,
+    ai_service_pb2_grpc,
+    ai_service_requests_pb2,
+    ai_service_responses_pb2,
+)
 from ai_python_services.services.ai_service import AiServiceServicer
 
 
@@ -72,19 +77,19 @@ class TestAiServiceServicer:
 
     def test_health_with_valid_authentication(self):
         """Test Health method returns success with valid authentication."""
-        request = ai_service_pb2.HealthRequest()
+        request = ai_service_requests_pb2.HealthRequest()
         context = self.create_mock_context(self.valid_api_key)
 
         response = self.servicer.Health(request, context)
 
         assert response is not None
-        assert isinstance(response, ai_service_pb2.HealthResponse)
+        assert isinstance(response, ai_service_responses_pb2.HealthResponse)
         assert response.message == "Healthy"
         context.abort.assert_not_called()
 
     def test_health_with_invalid_authentication(self):
         """Test Health method returns None when authentication fails."""
-        request = ai_service_pb2.HealthRequest()
+        request = ai_service_requests_pb2.HealthRequest()
         context = self.create_mock_context(self.invalid_api_key)
 
         response = self.servicer.Health(request, context)
@@ -94,15 +99,15 @@ class TestAiServiceServicer:
 
     def test_health_request_object(self):
         """Test that HealthRequest can be created properly."""
-        request = ai_service_pb2.HealthRequest()
+        request = ai_service_requests_pb2.HealthRequest()
         assert request is not None
-        assert isinstance(request, ai_service_pb2.HealthRequest)
+        assert isinstance(request, ai_service_requests_pb2.HealthRequest)
 
     def test_health_response_object(self):
         """Test that HealthResponse can be created and has correct message."""
-        response = ai_service_pb2.HealthResponse(message="Test message")
+        response = ai_service_responses_pb2.HealthResponse(message="Test message")
         assert response is not None
-        assert isinstance(response, ai_service_pb2.HealthResponse)
+        assert isinstance(response, ai_service_responses_pb2.HealthResponse)
         assert response.message == "Test message"
 
     def test_metadata_parsing(self):
@@ -170,7 +175,7 @@ class TestAiServiceServicer:
 
         # Check return type annotation
         return_annotation = sig.return_annotation
-        expected_return = ai_service_pb2.HealthResponse | None
+        expected_return = ai_service_responses_pb2.HealthResponse | None
         assert return_annotation == expected_return
 
     # @patch("ai_python_services.services.ai_service.grpc.StatusCode.UNAUTHENTICATED")
@@ -188,7 +193,7 @@ class TestAiServiceServicer:
 
     def test_context_abort_not_called_on_success(self):
         """Test that context.abort is not called when authentication succeeds."""
-        request = ai_service_pb2.HealthRequest()
+        request = ai_service_requests_pb2.HealthRequest()
         context = self.create_mock_context(self.valid_api_key)
 
         response = self.servicer.Health(request, context)
@@ -213,14 +218,14 @@ class TestProtobufMessages:
 
     def test_health_request_serialization(self):
         """Test HealthRequest can be serialized and deserialized."""
-        original_request = ai_service_pb2.HealthRequest()
+        original_request = ai_service_requests_pb2.HealthRequest()
 
         # Serialize to bytes
         serialized = original_request.SerializeToString()
         assert isinstance(serialized, bytes)
 
         # Deserialize back
-        deserialized_request = ai_service_pb2.HealthRequest()
+        deserialized_request = ai_service_requests_pb2.HealthRequest()
         deserialized_request.ParseFromString(serialized)
 
         # Should be equivalent (empty messages)
@@ -228,14 +233,14 @@ class TestProtobufMessages:
 
     def test_health_response_serialization(self):
         """Test HealthResponse can be serialized and deserialized."""
-        original_response = ai_service_pb2.HealthResponse(message="Test Health")
+        original_response = ai_service_responses_pb2.HealthResponse(message="Test Health")
 
         # Serialize to bytes
         serialized = original_response.SerializeToString()
         assert isinstance(serialized, bytes)
 
         # Deserialize back
-        deserialized_response = ai_service_pb2.HealthResponse()
+        deserialized_response = ai_service_responses_pb2.HealthResponse()
         deserialized_response.ParseFromString(serialized)
 
         # Should have same message
@@ -244,7 +249,7 @@ class TestProtobufMessages:
 
     def test_health_response_default_values(self):
         """Test HealthResponse default values."""
-        response = ai_service_pb2.HealthResponse()
+        response = ai_service_responses_pb2.HealthResponse()
 
         # Message should be empty string by default
         assert response.message == ""
@@ -255,7 +260,7 @@ class TestProtobufMessages:
 
     def test_protobuf_field_access(self):
         """Test that protobuf fields can be accessed and modified."""
-        response = ai_service_pb2.HealthResponse()
+        response = ai_service_responses_pb2.HealthResponse()
 
         # Test field exists
         assert hasattr(response, "message")
