@@ -1,9 +1,11 @@
 import asyncio
 import signal
+from os import getenv
 
 import grpc
-from ai_python_services.proto.ai_service import ai_service_pb2, ai_service_pb2_grpc
-from ai_python_services.services.ai_service import AiServiceServicer
+from ai_python_services.proto.health import health_pb2, health_pb2_grpc
+from ai_python_services.services.health.health_service import HealthServiceServicer
+from dotenv import load_dotenv
 from grpc_reflection.v1alpha import reflection
 
 
@@ -13,6 +15,7 @@ class App:
     """
 
     def __init__(self, port: int = 50051):
+        print(f"Initializing gRPC server on port {port}")
         self.port = port
         self.listen_addr = f"[::]:{port}"
         self.aio_server = None
@@ -24,11 +27,13 @@ class App:
 
         # TODO: ADD SERVICES HERE
         # Add our service to the server
-        ai_service_pb2_grpc.add_AiServiceServicer_to_server(AiServiceServicer(), self.aio_server)
+        health_pb2_grpc.add_HealthServiceServicer_to_server(
+            HealthServiceServicer(), self.aio_server
+        )
 
         # Enable server reflection
         SERVICE_NAMES = (
-            ai_service_pb2.DESCRIPTOR.services_by_name["AiService"].full_name,
+            health_pb2.DESCRIPTOR.services_by_name["HealthService"].full_name,
             reflection.SERVICE_NAME,
         )
         reflection.enable_server_reflection(SERVICE_NAMES, self.aio_server)
@@ -76,9 +81,11 @@ class App:
 
 
 async def main():
-    app = App(port=50051)
+    app = App(port=int(getenv("GRPC_SERVER_PORT", "50051")))
     await app.run()
 
 
 if __name__ == "__main__":
+    # Load environment variables if needed
+    load_dotenv()
     asyncio.run(main())

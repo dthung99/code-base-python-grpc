@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 def generate_grpc_code(
+    workspace_dir: Path = Path("proto"),
     input_dir: Path = Path("proto"),
     output_dir: Path = Path("src/ai_python_services/proto"),
 ) -> None:
@@ -20,6 +21,7 @@ def generate_grpc_code(
     project_root = Path(__file__).parent.parent
     proto_dir = project_root / input_dir
     output_dir = project_root / output_dir
+    workspace_dir = project_root / workspace_dir
 
     # Check if proto directory exists
     if not proto_dir.exists():
@@ -52,7 +54,7 @@ def generate_grpc_code(
             sys.executable,
             "-m",
             "grpc_tools.protoc",
-            f"--proto_path={proto_dir}",
+            f"--proto_path={workspace_dir}",
             f"--python_out={output_dir}",
             f"--grpc_python_out={output_dir}",
             str(proto_file),
@@ -326,10 +328,20 @@ def _convert_type(proto_type: str) -> str:
 
 
 def main():
-    generate_grpc_code(Path("proto"), Path("src/ai_python_services/proto"))
-    fix_grpc_imports(Path("src/ai_python_services/proto"))
-    generate_proto_stubs(Path("proto"), Path("src/ai_python_services/proto"))
-    # generate_proto_init(Path("src/ai_python_services/proto"))
+    target_dir = Path("")
+    # target_dir = Path("health")  # Change this to the target proto directory
+
+    workspace_dir = Path("proto")
+    input_dir = Path(workspace_dir, target_dir)
+    proto_output_dir = Path("src/ai_python_services/proto")
+    output_specific_dir = Path("src/ai_python_services/proto", target_dir)
+
+    generate_grpc_code(
+        workspace_dir=workspace_dir, input_dir=input_dir, output_dir=proto_output_dir
+    )
+    fix_grpc_imports(output_dir=proto_output_dir)
+    generate_proto_stubs(input_dir=input_dir, output_dir=output_specific_dir)
+    # generate_proto_init(output_dir)
 
 
 if __name__ == "__main__":

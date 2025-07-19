@@ -5,8 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "aiohttp>=3.12.14",
     "anthropic>=0.54.0",
     "google-genai>=1.19.0",
+
     "grpcio>=1.73.1",
     "grpcio-reflection>=1.73.1",
     "grpcio-status>=1.73.1",

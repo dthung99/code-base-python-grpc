@@ -21,6 +21,20 @@ from .ai_enum import (
 class VLMAgent(ABC):
     """Base interface for all Vision-Language Model agents."""
 
+    def __init__(
+        self,
+        model_name: GoogleVisionModel | OpenAIVisionModel | AnthropicVisionModel,
+        prompt: str = "",
+        language: Language = Language.VI_VN,
+    ):
+        self.model_name = model_name
+        self.prompt = prompt
+        self.language = language
+
+    def set_language(self, language: Language):
+        """Set the language for the agent."""
+        self.language = language
+
     @abstractmethod
     def analyze_images(
         self,
@@ -51,9 +65,7 @@ class OpenAIVisionAgent(VLMAgent):
         prompt: str = "",
         language: Language = Language.VI_VN,
     ):
-        self.model_name = model_name
-        self.prompt = prompt
-        self.language = language
+        super().__init__(model_name, prompt, language)
 
         api_key = getenv("OPENAI_API_KEY")
         if api_key is None:
@@ -138,9 +150,7 @@ class AnthropicVisionAgent(VLMAgent):
         prompt: str = "",
         language: Language = Language.VI_VN,
     ):
-        self.model_name = model_name
-        self.prompt = prompt
-        self.language = language
+        super().__init__(model_name, prompt, language)
 
         api_key = getenv("ANTHROPIC_API_KEY")
         if not api_key:
@@ -229,9 +239,7 @@ class GoogleVisionAgent(VLMAgent):
         prompt: str = "",
         language: Language = Language.VI_VN,
     ):
-        self.model_name = model_name
-        self.prompt = prompt
-        self.language = language
+        super().__init__(model_name, prompt, language)
 
         api_key = getenv("GOOGLE_API_KEY")
         if not api_key:

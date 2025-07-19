@@ -49,6 +49,8 @@ ANTHROPIC_API_KEY=your_key
 GOOGLE_API_KEY=your_key
 ```
 
+A full example for .env is given in example.env
+
 ## Client Usage (Node.js)
 
 ```javascript

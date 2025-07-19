@@ -3,8 +3,8 @@
 import grpc
 import warnings
 
-from ..ai_service import ai_service_requests_pb2 as ai__service_dot_ai__service__requests__pb2
-from ..ai_service import ai_service_responses_pb2 as ai__service_dot_ai__service__responses__pb2
+from ..health import health_requests_pb2 as health_dot_health__requests__pb2
+from ..health import health_responses_pb2 as health_dot_health__responses__pb2
 
 GRPC_GENERATED_VERSION = '1.73.1'
 GRPC_VERSION = grpc.__version__
@@ -19,14 +19,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in ai_service/ai_service_pb2_grpc.py depends on'
+        + f' but the generated code in health/health_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class AiServiceStub(object):
+class HealthServiceStub(object):
     """The AI service definition
     """
 
@@ -37,18 +37,18 @@ class AiServiceStub(object):
             channel: A grpc.Channel.
         """
         self.Health = channel.unary_unary(
-                '/ai_service.AiService/Health',
-                request_serializer=ai__service_dot_ai__service__requests__pb2.HealthRequest.SerializeToString,
-                response_deserializer=ai__service_dot_ai__service__responses__pb2.HealthResponse.FromString,
+                '/health.HealthService/Health',
+                request_serializer=health_dot_health__requests__pb2.HealthRequest.SerializeToString,
+                response_deserializer=health_dot_health__responses__pb2.HealthResponse.FromString,
                 _registered_method=True)
-        self.GenerateNotes = channel.unary_unary(
-                '/ai_service.AiService/GenerateNotes',
-                request_serializer=ai__service_dot_ai__service__requests__pb2.NoteGenerationRequest.SerializeToString,
-                response_deserializer=ai__service_dot_ai__service__responses__pb2.NoteGenerationResponse.FromString,
+        self.HealthWithAuthentication = channel.unary_unary(
+                '/health.HealthService/HealthWithAuthentication',
+                request_serializer=health_dot_health__requests__pb2.HealthRequest.SerializeToString,
+                response_deserializer=health_dot_health__responses__pb2.HealthResponse.FromString,
                 _registered_method=True)
 
 
-class AiServiceServicer(object):
+class HealthServiceServicer(object):
     """The AI service definition
     """
 
@@ -58,34 +58,34 @@ class AiServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GenerateNotes(self, request, context):
+    def HealthWithAuthentication(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_AiServiceServicer_to_server(servicer, server):
+def add_HealthServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Health': grpc.unary_unary_rpc_method_handler(
                     servicer.Health,
-                    request_deserializer=ai__service_dot_ai__service__requests__pb2.HealthRequest.FromString,
-                    response_serializer=ai__service_dot_ai__service__responses__pb2.HealthResponse.SerializeToString,
+                    request_deserializer=health_dot_health__requests__pb2.HealthRequest.FromString,
+                    response_serializer=health_dot_health__responses__pb2.HealthResponse.SerializeToString,
             ),
-            'GenerateNotes': grpc.unary_unary_rpc_method_handler(
-                    servicer.GenerateNotes,
-                    request_deserializer=ai__service_dot_ai__service__requests__pb2.NoteGenerationRequest.FromString,
-                    response_serializer=ai__service_dot_ai__service__responses__pb2.NoteGenerationResponse.SerializeToString,
+            'HealthWithAuthentication': grpc.unary_unary_rpc_method_handler(
+                    servicer.HealthWithAuthentication,
+                    request_deserializer=health_dot_health__requests__pb2.HealthRequest.FromString,
+                    response_serializer=health_dot_health__responses__pb2.HealthResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'ai_service.AiService', rpc_method_handlers)
+            'health.HealthService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('ai_service.AiService', rpc_method_handlers)
+    server.add_registered_method_handlers('health.HealthService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class AiService(object):
+class HealthService(object):
     """The AI service definition
     """
 
@@ -103,9 +103,9 @@ class AiService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/ai_service.AiService/Health',
-            ai__service_dot_ai__service__requests__pb2.HealthRequest.SerializeToString,
-            ai__service_dot_ai__service__responses__pb2.HealthResponse.FromString,
+            '/health.HealthService/Health',
+            health_dot_health__requests__pb2.HealthRequest.SerializeToString,
+            health_dot_health__responses__pb2.HealthResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -117,7 +117,7 @@ class AiService(object):
             _registered_method=True)
 
     @staticmethod
-    def GenerateNotes(request,
+    def HealthWithAuthentication(request,
             target,
             options=(),
             channel_credentials=None,
@@ -130,9 +130,9 @@ class AiService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/ai_service.AiService/GenerateNotes',
-            ai__service_dot_ai__service__requests__pb2.NoteGenerationRequest.SerializeToString,
-            ai__service_dot_ai__service__responses__pb2.NoteGenerationResponse.FromString,
+            '/health.HealthService/HealthWithAuthentication',
+            health_dot_health__requests__pb2.HealthRequest.SerializeToString,
+            health_dot_health__responses__pb2.HealthResponse.FromString,
             options,
             channel_credentials,
             insecure,

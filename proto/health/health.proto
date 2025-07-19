@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package health;
+
+import "health/health_requests.proto";
+import "health/health_responses.proto";
+
+// The AI service definition
+service HealthService {
+    rpc Health(HealthRequest) returns (HealthResponse);
+    rpc HealthWithAuthentication(HealthRequest) returns (HealthResponse);
+}
